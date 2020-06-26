@@ -2,6 +2,7 @@
 
 # Caches
 Session.vim
+*.swp
 *~
 .*~
 \#*\#
