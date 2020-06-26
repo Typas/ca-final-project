@@ -1,3 +1,4 @@
+// Latch somewhere
 module multDiv(
     clk,
     rst_n,
