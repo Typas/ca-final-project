@@ -11,6 +11,7 @@ module pc_control(clk,
 	input 		    clk, rst_n, branch	;
 	input 	[31:0]	PC, dest			;
 	output 	[31:0]	PC_nxt				;
+	reg 	[31:0]	PC_nxt				;
 
 	always @(posedge clk or negedge rst_n) begin
 		if (!rst_n) begin
