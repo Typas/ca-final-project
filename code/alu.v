@@ -34,7 +34,7 @@ module ALU(rdata1, rdata2, regs, imm, alu_src, alu_ctrl, result, is_zero);
                 .r2(rdata2),
                 .imm(imm),
                 .src(alu_src),
-                .out(tmp_in2),
+                .out(tmp_in2)
                 );
     ALUneg an0(
                .in(tmp_in2),
