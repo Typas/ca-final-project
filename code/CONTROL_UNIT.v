@@ -1,3 +1,5 @@
+`include "alu_control_def.v"
+
 module CONTROL_UNIT #(
    parameter BITS = 32,
    parameter word_depth = 32
@@ -15,89 +17,95 @@ module CONTROL_UNIT #(
    RegWrite
 );
 
-input         rst_n;
-input         [6:0] Opcode, [6:0] Funct7, [2:0] Funct3;
-output reg    [3:0] ALUCtrl;
-output        Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite;
+parameter   R_Type         = 7'b011_0011;
+parameter   I_Type_Calc    = 7'b001_0011;  // addi, xori, slti, ...
+parameter   U_Type_AUIPC   = 7'b001_0111;  // auipc
+parameter   I_Type_Load    = 7'b000_0011;  // load related
+parameter   S_Type         = 7'b010_0011;  // store related
+parameter   SB_Type        = 7'b110_0011;  // branch related
+parameter   UJ_Type_JAL    = 7'b110_1111;  // jal
+parameter   UJ_Type_JALR   = 7'b110_0111;  // jalr
 
-// currently supported instructions:
-//
-//  add      011 0011
-//  sub      011 0011
-//  xor      011 0011
-//  or       011 0011
-//  and      011 0011
-//  addi     001 0011
-//  slti     001 0011
-//  sltiu    001 0011
-//  auipc    001 0111
-//  lw       000 0011
-//  lh       000 0011
-//  lb       000 0011
-//  sw       010 0011
-//  sh       010 0011
-//  sb       010 0011
-//  jal      110 1111
-//  jalr     110 0111
-//  beq      110 0011
-//  bne      110 0011
-//  blt      110 0011
-//  bge      110 0011
-//  bltu     110 0011
-//  bgeu     110 0011
-//
+input         rst_n;
+input         [6:0] Opcode, Funct7;
+input         [2:0] Funct3;
+output reg    [4:0] ALUCtrl;
+output        Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite;
 
 assign    Branch       = (rst_n && (Opcode[6]   == 1'b1  ) );
 assign    MemRead      = (rst_n && (Opcode[6:4] == 3'b000) );
 assign    MemtoReg     = (rst_n && (Opcode[6:4] == 3'b000) );
 assign    MemWrite     = (rst_n && (Opcode[6:4] == 3'b010) );
-assign    ALUSrc       = (rst_n && ALUSrcHelper);
+assign    ALUSrc       = (rst_n && ALUSrcHelper );
 assign    RegWrite     = (rst_n && ({Opcode[6:4],Opcode[2]} != 4'b1100));
-assign    ALUSrcHelper = ((Opcode[3:2] != 2'b00) || (ALUOp[1:0] == 2'b00));
+assign    ALUSrcHelper =
+   (  (Opcode[2:0] == 3'b111) || (Opcode[5:3] == 3'b010) );
 
-parameter   R_Type       = 7'b011_0011
-parameter   I_TypeCalc   = 7'b001_0011  // addi, xori, slti, ...
-parameter   U_Type_0     = 7'b001_0111  // auipc
-parameter   I_TypeLoad   = 7'b000_0011  // load related
-parameter   S_Type       = 7'b010_0011  // store related
-parameter   SB_Type      = 7'b110_0011  // branch related
-parameter   UJ_Type_0    = 7'b110_1111  // jal
-parameter   UJ_Type_1    = 7'b110_0111  // jalr
-
-parameter ALUCTRL_AND           = 0;
-parameter ALUCTRL_OR            = 1;
-parameter ALUCTRL_ADD           = 2;
-parameter ALUCTRL_MUL           = 3;
-parameter ALUCTRL_MULU          = 4;
-parameter ALUCTRL_DIV           = 5;
-parameter ALUCTRL_DIVU          = 6;
-parameter ALUCTRL_REM           = 7;
-parameter ALUCTRL_REMU          = 8;
-parameter ALUCTRL_SUB           = 9;
-parameter ALUCTRL_SLT           = 10;
-parameter ALUCTRL_SLTU          = 11;
-parameter ALUCTRL_XOR           = 12;
-parameter ALUCTRL_SLL           = 13;
-parameter ALUCTRL_SRA           = 14;
-parameter ALUCTRL_SRL           = 15;
-parameter ALUCTRL_BEQ           = 16;
-parameter ALUCTRL_BNE           = 17;
-parameter ALUCTRL_BLT           = 18;
-parameter ALUCTRL_BLTU          = 19;
-parameter ALUCTRL_BGE           = 20;
-parameter ALUCTRL_BGEU          = 21;
-parameter ALUCTRL_JALR          = 22;
-parameter ALUCTRL_JAL           = 23;
-parameter ALUCTRL_AUIPC         = 24;
-parameter ALUCTRL_LUI           = 25;
-parameter ALUCTRL_NOP           = 26;
-
-always @*
+always @* begin
    case(Opcode)
-      RType, ITypeCalc: begin
+      R_Type, I_Type_Calc: begin
+         case(Funct3)
+            3'b000: begin
+               case(Opcode)
+                  R_Type: begin
+                     case(Funct7)
+                        7'b000_0000: ALUCtrl = ALUCTRL_ADD;
+                        7'b001_0000: ALUCtrl = ALUCTRL_SUB;
+                        default:     ALUCtrl = ALUCTRL_NOP;
+                     endcase
+                  end
+                  I_Type_Calc: begin
+                     ALUCtrl = ALUCTRL_ADD;
+                  end
+                  default: ALUCtrl = ALUCTRL_NOP;
+               endcase
+            end
+            3'b001: ALUCtrl = ALUCTRL_SLL;
+            3'b010: ALUCtrl = ALUCTRL_SLT;
+            3'b011: ALUCtrl = ALUCTRL_SLTU;
+            3'b100: ALUCtrl = ALUCTRL_XOR;
+            3'b101: begin
+               case(Funct7)
+                  7'b000_0000: ALUCtrl = ALUCTRL_SRL;
+                  7'b010_0000: ALUCtrl = ALUCTRL_SRA;
+                  default:     ALUCtrl = ALUCTRL_NOP;
+               endcase
+            end
+            3'b110: ALUCtrl = ALUCTRL_OR;
+            3'b111: ALUCtrl = ALUCTRL_AND;
+         endcase  // Funct3
+      end  // R_Type, I_Type_Calc
+      default: begin
+         ALUCtrl = ALUCTRL_NOP;
       end
-      UType0, ITypeLoad, SType: begin
+      U_Type_AUIPC: begin
+         ALUCtrl = ALUCTRL_AUIPC;
       end
+      I_Type_Load, S_Type: begin
+         ALUCtrl = ALUCTRL_ADD;
+      end
+      SB_Type: begin
+         case( Funct3 )
+            3'b000:  ALUCtrl = ALUCTRL_BEQ;
+            3'b001:  ALUCtrl = ALUCTRL_BNE;
+            3'b100:  ALUCtrl = ALUCTRL_BLT;
+            3'b101:  ALUCtrl = ALUCTRL_BGE;
+            3'b110:  ALUCtrl = ALUCTRL_BLTU;
+            3'b111:  ALUCtrl = ALUCTRL_BGEU;
+            default: ALUCtrl = ALUCTRL_NOP;
+         endcase
+      end
+      UJ_Type_JAL: begin
+         ALUCtrl = ALUCTRL_JAL;
+      end
+      UJ_Type_JALR: begin
+         ALUCtrl = ALUCTRL_JALR;
+      end
+      /* TODO: add remaining cases */
+      default: begin
+         ALUCtrl = ALUCTRL_NOP;
+      end
+   endcase  // Opcode
 end
 
 endmodule
