@@ -1,5 +1,3 @@
-`include "alu_control_def.v"
-
 module CONTROL_UNIT #(
    parameter BITS = 32,
    parameter word_depth = 32
@@ -16,6 +14,8 @@ module CONTROL_UNIT #(
    ALUSrc,
    RegWrite
 );
+
+`include "alu_control_def.v"
 
 parameter   R_Type         = 7'b011_0011;
 parameter   I_Type_Calc    = 7'b001_0011;  // addi, xori, slti, ...
@@ -36,10 +36,10 @@ assign    Branch       = (rst_n && (Opcode[6]   == 1'b1  ) );
 assign    MemRead      = (rst_n && (Opcode[6:4] == 3'b000) );
 assign    MemtoReg     = (rst_n && (Opcode[6:4] == 3'b000) );
 assign    MemWrite     = (rst_n && (Opcode[6:4] == 3'b010) );
-assign    ALUSrc       = (rst_n && ALUSrcHelper );
-assign    RegWrite     = (rst_n && ({Opcode[6:4],Opcode[2]} != 4'b1100));
 assign    ALUSrcHelper =
    (  (Opcode[2:0] == 3'b111) || (Opcode[5:3] == 3'b010) );
+assign    ALUSrc       = (rst_n && ALUSrcHelper );
+assign    RegWrite     = (rst_n && ({Opcode[6:4],Opcode[2]} != 4'b1100));
 
 always @* begin
    case(Opcode)
@@ -75,9 +75,6 @@ always @* begin
             3'b111: ALUCtrl = ALUCTRL_AND;
          endcase  // Funct3
       end  // R_Type, I_Type_Calc
-      default: begin
-         ALUCtrl = ALUCTRL_NOP;
-      end
       U_Type_AUIPC: begin
          ALUCtrl = ALUCTRL_AUIPC;
       end
