@@ -14,12 +14,14 @@ module ALU(rdata1, rdata2, imm, alu_src, alu_ctrl, result, is_zero);
 
     wire [`ALU_BITS-1:0]       main_in2;
     wire [`ALU_BITS-1:0]       tmp_in2;
+    wire [`ALU_BITS:0]         tmp_out;
     wire                       sign;
 
     reg [`ALU_BITS:0]          tmp_result;
     reg                        last_zero;
 
     assign result = tmp_result[`ALU_BITS-1:0];
+    assign tmp_out = tmp_result;
     assign is_zero = last_zero;
     assign sign =
                  alu_ctrl == `ALUCTRL_SUB
@@ -38,13 +40,14 @@ module ALU(rdata1, rdata2, imm, alu_src, alu_ctrl, result, is_zero);
                 );
     ALUneg an0(
                .in(tmp_in2),
-               .sign(sign), .out(main_in2)
+               .sign(sign),
+               .out(main_in2)
                );
     ALUmain am0(
                 .in1(rdata1),
-                .in2(rdata2),
+                .in2(main_in2),
                 .ctrl(alu_ctrl),
-                .result(tmp_result)
+                .result(tmp_out)
                 );
 
     always @(*) begin
