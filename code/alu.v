@@ -1,44 +1,28 @@
-module ALU(rdata1, rdata2, regs, imm, alu_src, alu_op, imm_ins, result, zero);
-   parameter ALU_BITS    = 32;
-   parameter ALU_CTRL_BITS = 4;
-   parameter ALUCTRL_AND = 0;
-   parameter ALUCTRL_OR  = 1;
-   parameter ALUCTRL_ADD = 2;
-   parameter ALUCTRL_MUL = 3;
-   parameter ALUCTRL_DIV = 4;
-   parameter ALUCTRL_REM = 5;
-   parameter ALUCTRL_SUB = 6;
-   parameter ALUCTRL_SLT = 7;
-   parameter ALUCTRL_XOR = 9;
-   parameter ALUCTRL_SLL = 10;
-   parameter ALUCTRL_SRA = 11;
-   parameter ALUCTRL_SRL = 12;
-   parameter ALUCTRL_SLTU = 14;
-
+module ALU(rdata1, rdata2, regs, imm, alu_src, alu_ctrl, result, is_zero);
    input [ALU_BITS-1:0] rdata1;
    input [ALU_BITS-1:0] rdata2;
-   input [1:0]          alu_op;
-   input [3:0]          imm_ins;
-   input                alu_src;
-   input [ALU_BITS-1:0] imm;
+   input [ALU_CTRL_BITS-1:0] alu_ctrl;
+   input                     alu_src;
+   input [ALU_BITS-1:0]      imm;
 
-   output [ALU_BITS-1:0] result;
-   output                zero;
+   output [ALU_BITS-1:0]     result;
+   output                    is_zero;
 
-   wire [ALU_BITS-1:0]   main_in2;
-   wire [ALU_BITS-1:0]   tmp_in2;
-   wire                  sign;
-   wire [ALU_CTRL_BITS-1:0] alu_ctrl;
+   wire [ALU_BITS-1:0]       main_in2;
+   wire [ALU_BITS-1:0]       tmp_in2;
+   wire                      sign;
 
-   reg [ALU_BITS-1:0]       tmp_result;
+   reg [ALU_BITS:0]          tmp_result;
 
-   assign tmp_in2 = alu_src ? imm : rdata2;
-   ALUcontrol ac0(
-                  .alu_op(alu_op),
-                  .ins(imm_ins),
-                  .ctrl(alu_ctrl)
-                  );
-   assign sign = alu_ctrl == ALUCTRL_SUB;
+   assign result = tmp_result[ALU_BITS-1:0];
+   assign is_zero = tmp_result[ALU_BITS];
+   ALUmux amu0(
+               .r2(rdata2),
+               .imm(imm),
+               .src(alu_src),
+               .out(tmp_in2),
+               )
+     assign sign = alu_ctrl == ALUCTRL_SUB;
    ALUneg an0(
               .in(tmp_in2),
               .sign(sign), .out(main_in2)
@@ -63,6 +47,14 @@ module ALU(rdata1, rdata2, regs, imm, alu_src, alu_op, imm_ins, result, zero);
 
    // alu control: input from imm_ins and alu_op
 
+   always @(*) begin
+      // some cases
+      // branch -> "bit is_zero" eq/ne when a xor b == 0/not 0
+      //                      lt/ge when a slt b == true/false
+      //                      ltu/geu when a sltu b == true/false
+      // arith -> "bits result", set is_zero to 0
+      // load/save -> "bits result", set is_zero to 0
+   end
 endmodule // ALU
 
 module ALUmain(in1, in2, ctrl, result);
@@ -94,11 +86,9 @@ module ALUmain(in1, in2, ctrl, result);
         // both add and sub are add, in2 already being negative
         ALUCTRL_ADD, ALUCTRL_SUB:
           arith_carry = arith_in1 + arith_in2;
-        // slt => ignore top bit, sltu => all, compare to zero
-        ALUCTRL_SLT, ALUCTRL_SLTU: begin
-           arith_carry = arith_in1 + arith_in2;
-           arith_carry = arith_carry[ALU_BITS-1+extend] ? 1 : 0;
-        end
+        // slt => ignore last bit, sltu => all, compare to is_zero
+        ALUCTRL_SLT, ALUCTRL_SLTU:
+          arith_carry = arith_in1 << (~extend) + arith_in2 << (~extend);
         ALUCTRL_AND:
           arith_carry = arith_in1 & arith_in2;
         ALUCTRL_OR:
@@ -117,12 +107,6 @@ module ALUmain(in1, in2, ctrl, result);
 
 endmodule // ALUmain
 
-module ALUcontrol(alu_op, ins, ctrl);
-   input [1:0] alu_op;
-   input [3:0] ins;
-   output [ALU_CTRL_BITS-1:0] ctrl;
-endmodule // ALUcontrol
-
 module ALUneg(in, sign, out);
    input [ALU_BITS-1:0]  in;
    input                 sign;
@@ -130,3 +114,12 @@ module ALUneg(in, sign, out);
 
    assign out = sign ? (~in+1) : in;
 endmodule // ALUneg
+
+module ALUmux(r2, imm, src, out);
+   input [ALU_BITS-1:0] r2;
+   input [ALU_BITS-1:0] imm;
+   input                src;
+   output [ALU_BITS-1:0] out;
+
+   assign out = src ? imm : r2;
+endmodule // ALUmux
