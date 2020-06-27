@@ -21,7 +21,12 @@ module ALU(rdata1, rdata2, regs, imm, alu_src, alu_ctrl, result, is_zero);
 
     assign result = tmp_result[`ALU_BITS-1:0];
     assign is_zero = last_zero;
-    assign sign = alu_ctrl == `ALUCTRL_SUB;
+    assign sign =
+                 alu_ctrl == `ALUCTRL_SUB
+                 || (
+                     alu_ctrl >= `ALUCTRL_BEQ
+                     && alu_ctrl <= `ALUCTRL_BGEU
+                     );
     // alu_src
     // 0 => reg
     // 1 => imm
@@ -67,7 +72,7 @@ endmodule // ALU
 module ALUmain(in1, in2, ctrl, result);
     input [`ALU_BITS-1:0]  in1;
     input [`ALU_BITS-1:0]  in2;
-    input [`ALU_CTRL_BITS-1:0] alu_ctrl;
+    input [`ALU_CTRL_BITS-1:0] ctrl;
     output [`ALU_BITS:0]       result;
 
     reg [`ALU_BITS:0]          arith_in1;
