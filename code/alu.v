@@ -2,7 +2,7 @@
 `define ALU_BITS      32
 `define ALU_CTRL_BITS 5
 
-module ALU(rdata1, rdata2, regs, imm, alu_src, alu_ctrl, result, is_zero);
+module ALU(rdata1, rdata2, imm, alu_src, alu_ctrl, result, is_zero);
     input [`ALU_BITS-1:0] rdata1;
     input [`ALU_BITS-1:0] rdata2;
     input [`ALU_CTRL_BITS-1:0] alu_ctrl;
