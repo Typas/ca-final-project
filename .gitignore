@@ -8,3 +8,12 @@ Session.vim
 
 # Old HW3 Reference Code
 hw3\ ref/**
+
+# simluation program files, such as "ncverilog" or "dv"
+**/INCA_libs/**
+command.log
+default.svf
+filenames.log
+ncverilog.history
+ncverilog.log
+novas_dump.log
