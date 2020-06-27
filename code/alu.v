@@ -1,3 +1,4 @@
+`include "alu_control_def.v"
 `define ALU_BITS      32
 `define ALU_CTRL_BITS 5
 
@@ -5,18 +6,18 @@ module ALU(rdata1, rdata2, regs, imm, alu_src, alu_ctrl, result, is_zero);
     input [`ALU_BITS-1:0] rdata1;
     input [`ALU_BITS-1:0] rdata2;
     input [`ALU_CTRL_BITS-1:0] alu_ctrl;
-    input                     alu_src;
+    input                      alu_src;
     input [`ALU_BITS-1:0]      imm;
 
     output [`ALU_BITS-1:0]     result;
-    output                    is_zero;
+    output                     is_zero;
 
     wire [`ALU_BITS-1:0]       main_in2;
     wire [`ALU_BITS-1:0]       tmp_in2;
-    wire                      sign;
+    wire                       sign;
 
     reg [`ALU_BITS:0]          tmp_result;
-    reg                       last_zero;
+    reg                        last_zero;
 
     assign result = tmp_result[`ALU_BITS-1:0];
     assign is_zero = last_zero;
@@ -72,7 +73,7 @@ module ALUmain(in1, in2, ctrl, result);
     reg [`ALU_BITS:0]          arith_in1;
     reg [`ALU_BITS:0]          arith_in2;
     reg [`ALU_BITS:0]          arith_carry;
-    reg                       extend;
+    reg                        extend;
 
     assign result = arith_carry;
 
@@ -129,7 +130,7 @@ endmodule // ALUmain
 
 module ALUneg(in, sign, out);
     input [`ALU_BITS-1:0]  in;
-    input                 sign;
+    input                  sign;
     output [`ALU_BITS-1:0] out;
 
     assign out = sign ? (~in+1) : in;
@@ -138,7 +139,7 @@ endmodule // ALUneg
 module ALUmux(r2, imm, src, out);
     input [`ALU_BITS-1:0] r2;
     input [`ALU_BITS-1:0] imm;
-    input                src;
+    input                 src;
     output [`ALU_BITS-1:0] out;
 
     assign out = src ? imm : r2;
