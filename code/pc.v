@@ -1,7 +1,7 @@
 // PC control unit
 
 
-module pc_control(PC,
+module pc(PC,
 				  PC_nxt,
 				  imm,
 				  branch);
