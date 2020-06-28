@@ -41,7 +41,7 @@ always @* begin  // ALUCtrl
                   R_Type: begin
                      case(Funct7)
                         7'b000_0000: ALUCtrl = ALUCTRL_ADD;
-                        7'b001_0000: ALUCtrl = ALUCTRL_SUB;
+                        7'b010_0000: ALUCtrl = ALUCTRL_SUB;
                         7'b000_0001: ALUCtrl = ALUCTRL_MUL;
                         default:     ALUCtrl = ALUCTRL_NOP;
                      endcase
