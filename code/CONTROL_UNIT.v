@@ -49,6 +49,7 @@ always @* begin  // ALUCtrl
                   I_Type_Calc: begin
                      ALUCtrl = ALUCTRL_ADD;
                   end
+                  default:           ALUCtrl = ALUCTRL_NOP;
                endcase  // Opcode
             end  // case(Funct3) == 3'b000
             3'b001: begin
@@ -70,6 +71,7 @@ always @* begin  // ALUCtrl
                   I_Type_Calc: begin
                      ALUCtrl = ALUCTRL_SLT;
                   end
+                  default:           ALUCtrl = ALUCTRL_NOP;
                endcase  // Opcode
             end  // case(Funct3) == 3'b010
             3'b011: begin
@@ -84,6 +86,7 @@ always @* begin  // ALUCtrl
                   I_Type_Calc: begin
                      ALUCtrl = ALUCTRL_SLTU;
                   end
+                  default:           ALUCtrl = ALUCTRL_NOP;
                endcase  // Opcode
             end  // case(Funct3) == 3'b011
             3'b100: begin
@@ -98,6 +101,7 @@ always @* begin  // ALUCtrl
                   I_Type_Calc: begin
                      ALUCtrl = ALUCTRL_XOR;
                   end
+                  default:           ALUCtrl = ALUCTRL_NOP;
                endcase  // Opcode
             end  // case(Funct3) == 3'b100
             3'b101: begin
@@ -120,6 +124,7 @@ always @* begin  // ALUCtrl
                   I_Type_Calc: begin
                      ALUCtrl = ALUCTRL_OR;
                   end
+                  default:           ALUCtrl = ALUCTRL_NOP;
                endcase  // Opcode
             end  // case(Funct3) == 3'b110
             3'b111: begin
@@ -134,6 +139,7 @@ always @* begin  // ALUCtrl
                   I_Type_Calc: begin
                      ALUCtrl = ALUCTRL_AND;
                   end
+                  default:           ALUCtrl = ALUCTRL_NOP;
                endcase  // Opcode
             end  // case(Funct3) == 3'b111
          endcase  // Funct3
