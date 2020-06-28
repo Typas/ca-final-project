@@ -87,11 +87,18 @@ always @* begin  // ALUCtrl
                endcase  // Opcode
             end  // case(Funct3) == 3'b011
             3'b100: begin
-               case( Funct7)
-                  7'b000_0000: ALUCtrl = ALUCTRL_XOR;
-                  7'b000_0001: ALUCtrl = ALUCTRL_DIV;
-                  default    : ALUCtrl = ALUCTRL_NOP;
-               endcase
+               case(Opcode)
+                  R_Type: begin
+                     case(Funct7)
+                        7'b000_0000: ALUCtrl = ALUCTRL_XOR;
+                        7'b000_0001: ALUCtrl = ALUCTRL_DIV;
+                        default:     ALUCtrl = ALUCTRL_NOP;
+                     endcase
+                  end
+                  I_Type_Calc: begin
+                     ALUCtrl = ALUCTRL_XOR;
+                  end
+               endcase  // Opcode
             end  // case(Funct3) == 3'b100
             3'b101: begin
                case(Funct7)
@@ -154,7 +161,6 @@ always @* begin  // ALUCtrl
       UJ_Type_JALR: begin
          ALUCtrl = ALUCTRL_JALR;
       end
-      /* TODO: add remaining cases */
       default: begin
          ALUCtrl = ALUCTRL_NOP;
       end
