@@ -34,6 +34,7 @@ module CHIP(clk,
    //---------------------------------------//
 
    // Todo: other wire/reg
+   wire [31:0] imm;
 
    //---------------------------------------//
    // Do not modify this part!!!            //
@@ -48,6 +49,15 @@ module CHIP(clk,
                                             .q1(rs1_data),                       //
                                             .q2(rs2_data));                      //
    //---------------------------------------//
+   pc pc0(                       
+                                            .PC(PC),
+                                            .PC_nxt(PC_nxt),
+                                            .imm(imm),
+                                            .branch(branch));
+
+   immGen imm0(                             .inst(mem_rdata_I),
+                                            .imm(imm))
+   
 
    // Todo: any combinational/sequential circuit
 
