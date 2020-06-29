@@ -185,9 +185,9 @@ module CONTROL_UNIT #(
     end  // Branch
 
     always @* begin // MemtoReg
-      case (Opcode)
+      case (Opcode) 
          I_Type_Load: MemtoReg = 1'b1;
-         default: 1'b0;
+         default: MemtoReg = 1'b0;
       endcase
     end //Branch 
 
