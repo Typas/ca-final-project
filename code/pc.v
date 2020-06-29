@@ -1,22 +1,22 @@
 // PC control unit
-module pc(PC, PC_nxt, imm, branch);
+module PC (Pc, Pc_nxt, Imm_In, Branch);
 
-    input           branch;
-    input [31:0]    PC, imm;
-    output [31:0]   PC_nxt;
+    input           Branch;
+    input [31:0]    Pc, Imm_In;
+    output [31:0]   Pc_nxt;
 
-    wire [31:0]     IMM;
+    wire [31:0]     imm;
 
-    assign IMM = imm << 1;
-    assign PC_nxt = branch?(PC+IMM):(PC+4);
+    assign imm = Imm_In << 1;
+    assign Pc_nxt = Branch?(Pc+imm):(Pc+4);
 
 endmodule
 
-module pc_and(branch, zero, is_branch);
-    input branch;
-    input zero;
-    output is_branch;
+module PC_AND(Branch, Zero, Is_Branch);
+    input Branch;
+    input Zero;
+    output Is_Branch;
 
-    assign is_branch = branch & zero;
+    assign Is_Branch = Branch & Zero;
 
 endmodule // pc_and

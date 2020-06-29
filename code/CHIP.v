@@ -66,18 +66,18 @@ module CHIP(clk,
                                              .q2(rs2_data));                      //
     //---------------------------------------//
     // Todo: any combinational/sequential circuit
-   pc_and pc1(                               .branch(branch), 
-                                             .zero(zero), 
-                                             .is_branch(is_branch));
-   pc pc0(
-                                             .PC(PC),
-                                             .PC_nxt(PC_nxt),
-                                             .imm(imm),
-                                             .branch(is_branch));
+   PC_AND pc_and0(                           .Branch(branch), 
+                                             .Zero(zero), 
+                                             .Is_Branch(is_branch));
+   PC pc0(
+                                             .Pc(PC),
+                                             .Pc_nxt(PC_nxt),
+                                             .Imm_In(imm),
+                                             .Branch(is_branch));
 
    immGen imm0(
-                                             .inst(mem_rdata_I),
-                                             .imm(imm));
+                                             .instruction(mem_rdata_I),
+                                             .immediate(imm));
 
    CONTROL_UNIT ctrl0(
                                              .Opcode(mem_rdata_I[6:0]),
