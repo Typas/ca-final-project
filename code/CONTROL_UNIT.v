@@ -1,7 +1,7 @@
 `include "alu_control_def.v"
 
 module CONTROL_UNIT #(
-                      parameter BITS = 32,
+                      parameter BITS = 32
                       ) (
                          Opcode,
                          Funct7,

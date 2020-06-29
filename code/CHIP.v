@@ -1,5 +1,9 @@
 // Your code
 
+`include "CONTROL_UNIT.v"
+`include "alu.v"
+`include "pc.v"
+
 module CHIP(clk,
             rst_n,
             // For mem_D
@@ -89,7 +93,7 @@ module CHIP(clk,
                                              .alu_src(ALUSrc),
                                              .alu_ctrl(ALUCtrl),
                                              .result(ALUout),
-                                             .is_zero(zero);
+                                             .is_zero(zero));
    
    assign rd_data = MemtoReg ? mem_rdata_D : ALUout;
    assign mem_addr_D = ALUout;
@@ -152,7 +156,7 @@ module reg_file(clk, rst_n, wen, a1, a2, aw, d, q1, q2);
     end
 endmodule
 
-module multDiv(clk, rst_n, valid, ready, mode, in_A, in_B, out);
+// module multDiv(clk, rst_n, valid, ready, mode, in_A, in_B, out);
     // Todo: your HW3
 
-endmodule
+// endmodule
