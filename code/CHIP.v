@@ -99,6 +99,9 @@ module CHIP(clk,
                                              .result(ALUout),
                                              .is_zero(zero));
    
+   assign rd = mem_rdata_I[11:7];
+   assign rs1 = mem_rdata_I[19:15];
+   assign rs2 = mem_rdata_I[24:20];
    assign rd_data = MemtoReg ? mem_rdata_D : ALUout;
    assign mem_addr_D = ALUout;
    assign mem_wdata_D = rs2_data;
