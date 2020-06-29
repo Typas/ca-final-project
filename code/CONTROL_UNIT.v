@@ -184,6 +184,12 @@ module CONTROL_UNIT #(
         endcase
     end  // Branch
 
+    always @* begin // MemtoReg
+      case (Opcode)
+         I_Type_Load: MemtoReg = 1'b1;
+         default: 1'b0;
+      endcase
+    end //Branch 
 
     always @* begin  // MemWrite
         case(Opcode)
