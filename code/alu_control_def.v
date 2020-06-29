@@ -1,3 +1,7 @@
+`ifndef _ALU_CONTROL_DEF_V
+`define _ALU_CONTROL_DEF_V
+
+`timescale 1 ns/10 ps
 `define ALUCTRL_AND            0
 `define ALUCTRL_OR             1
 `define ALUCTRL_ADD            2
@@ -27,3 +31,5 @@
 `define ALUCTRL_REM            26
 `define ALUCTRL_REMU           27
 `define ALUCTRL_NOP            31
+
+`endif // _ALU_CONTROL_DEF_V

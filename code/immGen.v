@@ -1,4 +1,5 @@
 // Immediate Generator unit
+`timescale 1 ns/10 ps
 
 module immGen(inst, imm);
     input   [31:0]  inst;

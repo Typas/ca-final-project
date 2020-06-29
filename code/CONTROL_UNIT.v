@@ -1,4 +1,5 @@
 `include "alu_control_def.v"
+`timescale 1 ns/10 ps
 
 module CONTROL_UNIT #(
                       parameter BITS = 32
@@ -8,7 +9,6 @@ module CONTROL_UNIT #(
                          Funct3,
                          rst_n,
                          Branch,
-                         MemRead,
                          MemtoReg,
                          ALUCtrl,
                          MemWrite,
@@ -29,7 +29,7 @@ module CONTROL_UNIT #(
     input [6:0]   Opcode, Funct7;
     input [2:0]   Funct3;
     output reg [4:0] ALUCtrl;
-    output reg       Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite;
+    output reg       Branch, MemtoReg, MemWrite, ALUSrc, RegWrite;
 
     always @* begin  // ALUCtrl
         case(Opcode)
@@ -180,20 +180,6 @@ module CONTROL_UNIT #(
             end
             default: begin
                 Branch = 1'b0;
-            end
-        endcase
-    end  // Branch
-
-
-    always @* begin  // MemRead, MemtoReg
-        case(Opcode)
-            I_Type_Load: begin
-                MemRead  = 1'b1;
-                MemtoReg = 1'b1;
-            end
-            default: begin
-                MemRead  = 1'b0;
-                MemtoReg = 1'b0;
             end
         endcase
     end  // Branch

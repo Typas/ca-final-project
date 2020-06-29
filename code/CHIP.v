@@ -1,8 +1,11 @@
 // Your code
 
+`timescale 1 ns/10 ps
+`include "alu_control_def.v"
 `include "CONTROL_UNIT.v"
 `include "alu.v"
 `include "pc.v"
+`include "immGen.v"
 
 module CHIP(clk,
             rst_n,
@@ -20,10 +23,10 @@ module CHIP(clk,
     output        mem_wen_D  ;
     output [31:0] mem_addr_D ;
     output [31:0] mem_wdata_D;
-    input [31:0]  mem_rdata_D;
+    input  [31:0] mem_rdata_D;
     // For mem_I
     output [31:0] mem_addr_I ;
-    input [31:0]  mem_rdata_I;
+    input  [31:0] mem_rdata_I;
 
     //---------------------------------------//
     // Do not modify this part!!!            //
@@ -72,7 +75,8 @@ module CHIP(clk,
                                              .imm(imm),
                                              .branch(is_branch));
 
-   immGen imm0(                              .inst(mem_rdata_I),
+   immGen imm0(
+                                             .inst(mem_rdata_I),
                                              .imm(imm));
 
    CONTROL_UNIT ctrl0(
