@@ -21,7 +21,6 @@ module ALU(rdata1, rdata2, imm, alu_src, alu_ctrl, result, is_zero);
     reg                        last_zero;
 
     assign result = tmp_result[`ALU_BITS-1:0];
-    assign tmp_out = tmp_result;
     assign is_zero = last_zero;
     assign sign =
                  alu_ctrl == `ALUCTRL_SUB
@@ -49,6 +48,7 @@ module ALU(rdata1, rdata2, imm, alu_src, alu_ctrl, result, is_zero);
                 .ctrl(alu_ctrl),
                 .result(tmp_out)
                 );
+    always @(*) tmp_result = tmp_out;
 
     always @(*) begin
         // some cases
