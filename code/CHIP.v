@@ -49,7 +49,7 @@ module CHIP(clk,
                                              .q1(rs1_data),                       //
                                              .q2(rs2_data));                      //
     //---------------------------------------//
-    pc pc0(                       
+    pc pc0(
                                   .PC(PC),
                                   .PC_nxt(PC_nxt),
                                   .imm(imm),
@@ -57,7 +57,7 @@ module CHIP(clk,
 
     immGen imm0(                             .inst(mem_rdata_I),
                                              .imm(imm))
-   
+
 
         // Todo: any combinational/sequential circuit
 
