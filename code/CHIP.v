@@ -24,7 +24,7 @@ module CHIP(clk,
     //---------------------------------------//
     // Do not modify this part!!!            //
     // Exception: You may change wire to reg //
-    reg [31:0]    PC          ;              //
+    reg  [31:0]   PC          ;              //
     wire [31:0]   PC_nxt      ;              //
     wire          regWrite    ;              //
     wire [ 4:0]   rs1, rs2, rd;              //
@@ -34,11 +34,20 @@ module CHIP(clk,
     //---------------------------------------//
 
     // Todo: other wire/reg
-    wire [31:0]   imm;
+    wire [31:0]                  imm;
+    wire                         branch;
+    wire                         is_branch;
+    wire                         MemtoReg;
+    wire [`ALU_CTRL_BITS-1:0]    ALUCtrl;
+    wire                         ALUSrc;
+    wire [`ALU_BITS-1:0]         ALUout;
+    wire                         zero;
+
 
     //---------------------------------------//
     // Do not modify this part!!!            //
-    reg_file reg0(                           //
+    //---------------------------------------//                                 
+    reg_file reg0(                           
                                              .clk(clk),                           //
                                              .rst_n(rst_n),                       //
                                              .wen(regWrite),                      //
@@ -49,17 +58,43 @@ module CHIP(clk,
                                              .q1(rs1_data),                       //
                                              .q2(rs2_data));                      //
     //---------------------------------------//
-    pc pc0(
-                                  .PC(PC),
-                                  .PC_nxt(PC_nxt),
-                                  .imm(imm),
-                                  .branch(branch));
+    // Todo: any combinational/sequential circuit
+   pc_and pc1(                               .branch(branch), 
+                                             .zero(zero), 
+                                             .is_branch(is_branch));
+   pc pc0(
+                                             .PC(PC),
+                                             .PC_nxt(PC_nxt),
+                                             .imm(imm),
+                                             .branch(is_branch));
 
-    immGen imm0(                             .inst(mem_rdata_I),
-                                             .imm(imm))
+   immGen imm0(                              .inst(mem_rdata_I),
+                                             .imm(imm));
 
+   CONTROL_UNIT ctrl0(
+                                             .Opcode(mem_rdata_I[6:0]),
+                                             .Funct7(mem_rdata_I[31:25]),
+                                             .Funct3(mem_rdata_I[14:12]),
+                                             .rst_n(rst_n),
+                                             .Branch(branch),
+                                             .MemtoReg(MemtoReg),
+                                             .ALUCtrl(ALUCtrl),
+                                             .MemWrite(mem_wen_D),
+                                             .ALUSrc(ALUSrc),
+                                             .RegWrite(regWrite));
 
-        // Todo: any combinational/sequential circuit
+   ALU alu0(                                 .rdata1(rs1_data), 
+                                             .rdata2(rs2_data), 
+                                             .imm(imm), 
+                                             .alu_src(ALUSrc),
+                                             .alu_ctrl(ALUCtrl),
+                                             .result(ALUout),
+                                             .is_zero(zero);
+   
+   assign rd_data = MemtoReg ? mem_rdata_D : ALUout;
+   assign mem_addr_D = ALUout;
+   assign mem_wdata_D = rs2_data;
+   assign mem_addr_I = PC;
 
         always @(posedge clk or negedge rst_n) begin
             if (!rst_n) begin
