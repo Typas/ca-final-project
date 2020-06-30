@@ -172,7 +172,3 @@ module reg_file(clk, rst_n, wen, a1, a2, aw, d, q1, q2);
     end
 endmodule
 
-// module multDiv(clk, rst_n, valid, ready, mode, in_A, in_B, out);
-    // Todo: your HW3
-
-// endmodule
