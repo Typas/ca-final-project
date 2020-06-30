@@ -1,13 +1,12 @@
 `include "alu_control_def.v"
 `define ALU_BITS      32
 `define ALU_CTRL_BITS 5
-`timescale 1 ns/10 ps
 
 module ALU(rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ctrl, result, is_zero);
     input [`ALU_BITS-1:0] rdata1;
     input [`ALU_BITS-1:0] rdata2;
     input [`ALU_CTRL_BITS-1:0] alu_ctrl;
-    input                      pc_in;
+    input [`ALU_BITS-1:0]      pc_in;
     input                      alu_pcsrc;
     input                      alu_immsrc;
     input [`ALU_BITS-1:0]      imm;

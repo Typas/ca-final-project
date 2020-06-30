@@ -1,5 +1,4 @@
 // Your code
-`timescale 1 ns/10 ps
 `include "alu_control_def.v"
 `include "CONTROL_UNIT.v"
 `include "alu.v"

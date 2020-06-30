@@ -1,5 +1,4 @@
 `include "alu_control_def.v"
-`timescale 1 ns/10 ps
 
 module CONTROL_UNIT #(
                       parameter BITS = 32
