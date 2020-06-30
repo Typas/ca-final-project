@@ -6,6 +6,7 @@ module CONTROL_UNIT #(
                          Opcode,
                          Funct7,
                          Funct3,
+                         MulDivAluReady,
                          rst_n,
                          Branch,
                          MemtoReg,
@@ -26,11 +27,11 @@ module CONTROL_UNIT #(
     parameter   UJ_Type_JAL    = 7'b110_1111;  // jal
     parameter   UJ_Type_JALR   = 7'b110_0111;  // jalr
 
-    input         rst_n;
+    input         rst_n, MulDivAluReady;
     input [6:0]   Opcode, Funct7;
     input [2:0]   Funct3;
     output reg [4:0] ALUCtrl;
-    output reg       Branch, MemtoReg, MemWrite, ALUSrc, RegWrite, ALUPCSrc, PCJalr;
+    output reg       Branch, MemtoReg, MemWrite, ALUSrc, RegWrite, ALUPCSrc, PCJalr, Stall;
 
     always @* begin  // ALUCtrl
         case(Opcode)
@@ -227,10 +228,31 @@ module CONTROL_UNIT #(
     end  // ALUPCSrc
 
 
+    always @* begin  // Stall
+        case(Opcode)
+            R_Type: begin
+                case(Funct7)
+                    7'b000_0001: Stall = ~MulDivAluReady;
+                endcase
+                default: Stall = 1'b0;
+            end
+            default: begin
+                Stall   = 1'b0;
+            end
+        endcase
+    end  // Stall
+
+
     always @* begin  // RegWrite
         case(Opcode)
             S_Type, SB_Type: begin
                 RegWrite = 1'b0;
+            end
+            R_Type: begin
+               case(Funct7)
+                  7'b000_0001: RegWrite = MulDivAluReady;
+                  default:     RegWrite = 1'b1;
+               endcase
             end
             default: begin
                 RegWrite = 1'b1;
