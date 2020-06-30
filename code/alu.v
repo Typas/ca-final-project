@@ -120,7 +120,7 @@ module ALUmain(in1, in2, ctrl, result);
                 arith_carry = arith_in1 | arith_in2 ;
             `ALUCTRL_XOR, `ALUCTRL_BEQ, `ALUCTRL_BNE:
                 arith_carry = {
-                               (arith_in1[`ALU_BITS-1:0] ^ arith_in2[`ALU_BITS-1:0]) ? 0 : 1,
+                               !(arith_in1[`ALU_BITS-1:0] ^ arith_in2[`ALU_BITS-1:0]),
                                arith_in1[`ALU_BITS-1:0] ^ arith_in2[`ALU_BITS-1:0]
                                };
             // only lower 5 bits
