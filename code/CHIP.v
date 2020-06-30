@@ -1,5 +1,4 @@
 // Your code
-
 `timescale 1 ns/10 ps
 `include "alu_control_def.v"
 `include "CONTROL_UNIT.v"
@@ -41,67 +40,70 @@ module CHIP(clk,
     //---------------------------------------//
 
     // Todo: other wire/reg
-    wire [31:0]                  imm;
-    wire                         branch;
-    wire                         is_branch;
-    wire                         MemtoReg;
-    wire [`ALU_CTRL_BITS-1:0]    ALUCtrl;
-    wire                         ALUPCSrc;
-    wire                         ALUSrc;
-    wire [`ALU_BITS-1:0]         ALUout;
-    wire                         zero;
+    wire [31:0]               imm;
+    wire                      branch;
+    wire                      is_branch;
+    wire                      MemtoReg;
+    wire [`ALU_CTRL_BITS-1:0] ALUCtrl;
+    wire                      ALUPCSrc;
+    wire                      ALUSrc;
+    wire [`ALU_BITS-1:0]      ALUout;
+    wire                      zero;
 
 
     //---------------------------------------//
     // Do not modify this part!!!            //
     //---------------------------------------//                                 
-    reg_file reg0(                           
-                                             .clk(clk),                           //
-                                             .rst_n(rst_n),                       //
-                                             .wen(regWrite),                      //
-                                             .a1(rs1),                            //
-                                             .a2(rs2),                            //
-                                             .aw(rd),                             //
-                                             .d(rd_data),                         //
-                                             .q1(rs1_data),                       //
-                                             .q2(rs2_data));                      //
+    reg_file reg0(
+                  .clk(clk),                           //
+                  .rst_n(rst_n),                       //
+                  .wen(regWrite),                      //
+                  .a1(rs1),                            //
+                  .a2(rs2),                            //
+                  .aw(rd),                             //
+                  .d(rd_data),                         //
+                  .q1(rs1_data),                       //
+                  .q2(rs2_data));                      //
     //---------------------------------------//
     // Todo: any combinational/sequential circuit
-   PC_AND pc_and0(                           .Branch(branch), 
-                                             .Zero(zero), 
-                                             .Is_Branch(is_branch));
-   PC pc0(
-                                             .Pc(PC),
-                                             .Pc_nxt(PC_nxt),
-                                             .Imm_In(imm),
-                                             .Branch(is_branch));
+    //---------------------------------------//
+    PC_AND pc_and0(
+                   .Branch(branch),
+                   .Zero(zero),
+                   .Is_Branch(is_branch));
+    PC pc0(
+           .Pc(PC),
+           .Pc_nxt(PC_nxt),
+           .Imm_In(imm),
+           .Branch(is_branch));
 
-   immGen imm0(
-                                             .instruction(mem_rdata_I),
-                                             .immediate(imm));
+    immGen imm0(
+                .instruction(mem_rdata_I),
+                .immediate(imm));
 
-   CONTROL_UNIT ctrl0(
-                                             .Opcode(mem_rdata_I[6:0]),
-                                             .Funct7(mem_rdata_I[31:25]),
-                                             .Funct3(mem_rdata_I[14:12]),
-                                             .rst_n(rst_n),
-                                             .Branch(branch),
-                                             .MemtoReg(MemtoReg),
-                                             .ALUCtrl(ALUCtrl),
-                                             .MemWrite(mem_wen_D),
-                                             .ALUSrc(ALUSrc),
-                                             .ALUPCSrc(ALUPCSrc),
-                                             .RegWrite(regWrite));
+    CONTROL_UNIT ctrl0(
+                       .Opcode(mem_rdata_I[6:0]),
+                       .Funct7(mem_rdata_I[31:25]),
+                       .Funct3(mem_rdata_I[14:12]),
+                       .rst_n(rst_n),
+                       .Branch(branch),
+                       .MemtoReg(MemtoReg),
+                       .ALUCtrl(ALUCtrl),
+                       .MemWrite(mem_wen_D),
+                       .ALUSrc(ALUSrc),
+                       .ALUPCSrc(ALUPCSrc),
+                       .RegWrite(regWrite));
 
-   ALU alu0(                                 .rdata1(rs1_data), 
-                                             .pc_in(PC),
-                                             .rdata2(rs2_data), 
-                                             .imm(imm), 
-                                             .alu_pcsrc(ALUPCSrc),
-                                             .alu_immsrc(ALUSrc),
-                                             .alu_ctrl(ALUCtrl),
-                                             .result(ALUout),
-                                             .is_zero(zero));
+    ALU alu0(
+             .rdata1(rs1_data),
+             .pc_in(PC),
+             .rdata2(rs2_data),
+             .imm(imm),
+             .alu_pcsrc(ALUPCSrc),
+             .alu_immsrc(ALUSrc),
+             .alu_ctrl(ALUCtrl),
+             .result(ALUout),
+             .is_zero(zero));
    
    assign rd = mem_rdata_I[11:7];
    assign rs1 = mem_rdata_I[19:15];

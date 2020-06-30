@@ -7,6 +7,8 @@ module ALU(rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ctrl, result, 
     input [`ALU_BITS-1:0] rdata1;
     input [`ALU_BITS-1:0] rdata2;
     input [`ALU_CTRL_BITS-1:0] alu_ctrl;
+    input                      pc_in;
+    input                      alu_pcsrc;
     input                      alu_immsrc;
     input [`ALU_BITS-1:0]      imm;
 

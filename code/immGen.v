@@ -2,11 +2,11 @@
 `timescale 1 ns/10 ps
 
 module immGen(instruction, immediate);
-    input   [31:0]  instruction;
-    output  [31:0]  immediate;
+    input [31:0]  instruction;
+    output [31:0] immediate;
 
-    wire    [6:0]   opcode;
-    reg     [31:0]  immediate;
+    wire [6:0]    opcode;
+    reg [31:0]    immediate;
 
     assign opcode = instruction[6:0];
 
@@ -20,5 +20,3 @@ module immGen(instruction, immediate);
         endcase
     end
 endmodule
-
-    
