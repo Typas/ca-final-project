@@ -13,7 +13,8 @@ module CONTROL_UNIT #(
                          MemWrite,
                          ALUSrc,
                          ALUPCSrc,
-                         RegWrite
+                         RegWrite,
+                         PCJal
                          );
 
     parameter   R_Type         = 7'b011_0011;  // RV32I such as add; RV32M such as MUL
@@ -29,7 +30,7 @@ module CONTROL_UNIT #(
     input [6:0]   Opcode, Funct7;
     input [2:0]   Funct3;
     output reg [4:0] ALUCtrl;
-    output reg       Branch, MemtoReg, MemWrite, ALUSrc, RegWrite, ALUPCSrc;
+    output reg       Branch, MemtoReg, MemWrite, ALUSrc, RegWrite, ALUPCSrc, PCJal;
 
     always @* begin  // ALUCtrl
         case(Opcode)
@@ -236,6 +237,18 @@ module CONTROL_UNIT #(
             end
         endcase
     end  // RegWrite
+
+
+    always @* begin  // PCJal
+        case(Opcode)
+            UJ_Type_JAL, UJ_Type_JALR: begin
+                PCJal = 1'b1;
+            end
+            default: begin
+                PCJal = 1'b0;
+            end
+        endcase
+    end  // PCJal
 
 
 endmodule  // CONTROL_UNIT
