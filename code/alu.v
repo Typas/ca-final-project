@@ -32,12 +32,13 @@ module ALU(clk, rst_n, rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ct
 
     assign result = tmp_result[`ALU_BITS-1:0];
     assign is_zero = last_zero;
-    assign sign =
-                 alu_ctrl == `ALUCTRL_SUB
-                 || (
-                     alu_ctrl >= `ALUCTRL_BEQ
-                     && alu_ctrl <= `ALUCTRL_BGEU
-                     );
+    assign sign = (
+                   alu_ctrl >= `ALUCTRL_SUB
+                   && alu_ctrl <= `ALUCTRL_SLTU
+                   ) || (
+                         alu_ctrl >= `ALUCTRL_BEQ
+                         && alu_ctrl <= `ALUCTRL_BGEU
+                         );
 
     // alu_immsrc
     // 0 => reg
