@@ -229,7 +229,7 @@ module CONTROL_UNIT #(
 
     always @* begin  // RegWrite
         case(Opcode)
-            S_Type, SB_Type, UJ_Type_JAL: begin
+            S_Type, SB_Type: begin
                 RegWrite = 1'b0;
             end
             default: begin
