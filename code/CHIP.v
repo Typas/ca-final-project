@@ -49,6 +49,7 @@ module CHIP(clk,
     wire                      Jalr;
     wire [`ALU_BITS-1:0]      ALUout;
     wire                      zero;
+    wire                      ready;
     wire                      Stall;
 
 
@@ -88,6 +89,7 @@ module CHIP(clk,
                        .Opcode(mem_rdata_I[6:0]),
                        .Funct7(mem_rdata_I[31:25]),
                        .Funct3(mem_rdata_I[14:12]),
+                       .MulDivAluReady(ready),
                        .rst_n(rst_n),
                        .Branch(branch),
                        .MemtoReg(MemtoReg),
@@ -97,9 +99,11 @@ module CHIP(clk,
                        .ALUPCSrc(ALUPCSrc),
                        .RegWrite(regWrite),
                        .PCJalr(Jalr),
-                       .Stall(stall));
+                       .Stall(Stall));
 
     ALU alu0(
+             .clk(clk),
+             .rst_n(rst_n),
              .rdata1(rs1_data),
              .pc_in(PC),
              .rdata2(rs2_data),
@@ -108,7 +112,8 @@ module CHIP(clk,
              .alu_immsrc(ALUSrc),
              .alu_ctrl(ALUCtrl),
              .result(ALUout),
-             .is_zero(zero));
+             .is_zero(zero),
+             .ready(ready));
    
    assign rd = mem_rdata_I[11:7];
    assign rs1 = mem_rdata_I[19:15];
