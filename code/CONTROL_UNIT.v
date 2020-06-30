@@ -205,7 +205,7 @@ module CONTROL_UNIT #(
 
     always @* begin  // ALUSrc
         case(Opcode)
-            I_Type_Calc, U_Type_AUIPC, UJ_Type_JAL, UJ_Type_JALR: begin
+            I_Type_Calc, U_Type_AUIPC, UJ_Type_JAL, UJ_Type_JALR, S_Type, I_Type_Load: begin
                 ALUSrc   = 1'b1;
             end
             default: begin
