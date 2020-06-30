@@ -156,7 +156,7 @@ module ALUmain(in1, in2, ctrl, result);
             // slt => ignore last bit, sltu => all, compare to is_zero
             // fu 硬尻, 只留最後一個bit
             `ALUCTRL_SLT, `ALUCTRL_SLTU, `ALUCTRL_BLT, `ALUCTRL_BLTU, `ALUCTRL_BGE, `ALUCTRL_BGEU:
-                arith_carry = ((arith_in1 << (~extend) + arith_in2 << (~extend)) & `ALU_BITS'b0) >> `ALU_BITS;
+                arith_carry = (arith_in1 << (~extend) + arith_in2 << (~extend)) >> `ALU_BITS;
             `ALUCTRL_AND:
                 arith_carry = arith_in1 & arith_in2;
             `ALUCTRL_OR:
