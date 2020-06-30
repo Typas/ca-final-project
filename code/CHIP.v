@@ -46,6 +46,7 @@ module CHIP(clk,
     wire [`ALU_CTRL_BITS-1:0] ALUCtrl;
     wire                      ALUPCSrc;
     wire                      ALUSrc;
+    wire                      Jalr;
     wire [`ALU_BITS-1:0]      ALUout;
     wire                      zero;
 
@@ -74,7 +75,9 @@ module CHIP(clk,
            .Pc(PC),
            .Pc_nxt(PC_nxt),
            .Imm_In(imm),
-           .Branch(is_branch));
+           .Rs_data1(rs1_data),
+           .Branch(is_branch),
+           .Jalr(Jalr));
 
     immGen imm0(
                 .instruction(mem_rdata_I),
@@ -91,7 +94,8 @@ module CHIP(clk,
                        .MemWrite(mem_wen_D),
                        .ALUSrc(ALUSrc),
                        .ALUPCSrc(ALUPCSrc),
-                       .RegWrite(regWrite));
+                       .RegWrite(regWrite),
+                       .PCJalr(Jalr));
 
     ALU alu0(
              .rdata1(rs1_data),
