@@ -46,6 +46,7 @@ module CHIP(clk,
     wire                         is_branch;
     wire                         MemtoReg;
     wire [`ALU_CTRL_BITS-1:0]    ALUCtrl;
+    wire                         ALUPCSrc;
     wire                         ALUSrc;
     wire [`ALU_BITS-1:0]         ALUout;
     wire                         zero;
@@ -89,12 +90,15 @@ module CHIP(clk,
                                              .ALUCtrl(ALUCtrl),
                                              .MemWrite(mem_wen_D),
                                              .ALUSrc(ALUSrc),
+                                             .ALUPCSrc(ALUPCSrc),
                                              .RegWrite(regWrite));
 
    ALU alu0(                                 .rdata1(rs1_data), 
+                                             .pc_in(PC),
                                              .rdata2(rs2_data), 
                                              .imm(imm), 
-                                             .alu_src(ALUSrc),
+                                             .alu_pcsrc(ALUPCSrc),
+                                             .alu_immsrc(ALUSrc),
                                              .alu_ctrl(ALUCtrl),
                                              .result(ALUout),
                                              .is_zero(zero));
