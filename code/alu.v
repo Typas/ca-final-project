@@ -3,16 +3,17 @@
 `define ALU_CTRL_BITS 5
 `timescale 1 ns/10 ps
 
-module ALU(rdata1, rdata2, imm, alu_src, alu_ctrl, result, is_zero);
+module ALU(rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ctrl, result, is_zero);
     input [`ALU_BITS-1:0] rdata1;
     input [`ALU_BITS-1:0] rdata2;
     input [`ALU_CTRL_BITS-1:0] alu_ctrl;
-    input                      alu_src;
+    input                      alu_immsrc;
     input [`ALU_BITS-1:0]      imm;
 
     output [`ALU_BITS-1:0]     result;
     output                     is_zero;
 
+    wire [`ALU_BITS-1:0]       main_in1;
     wire [`ALU_BITS-1:0]       main_in2;
     wire [`ALU_BITS-1:0]       tmp_in2;
     wire [`ALU_BITS:0]         tmp_out;
@@ -29,14 +30,20 @@ module ALU(rdata1, rdata2, imm, alu_src, alu_ctrl, result, is_zero);
                      alu_ctrl >= `ALUCTRL_BEQ
                      && alu_ctrl <= `ALUCTRL_BGEU
                      );
-    // alu_src
+    // alu_immsrc
     // 0 => reg
     // 1 => imm
     ALUmux amu0(
                 .r2(rdata2),
                 .imm(imm),
-                .src(alu_src),
+                .src(alu_immsrc),
                 .out(tmp_in2)
+                );
+    ALUmux amu1(
+                .r2(rdata1),
+                .imm(pc_in),
+                .src(alu_pcsrc),
+                .out(main_in1)
                 );
     ALUneg an0(
                .in(tmp_in2),
@@ -44,7 +51,7 @@ module ALU(rdata1, rdata2, imm, alu_src, alu_ctrl, result, is_zero);
                .out(main_in2)
                );
     ALUmain am0(
-                .in1(rdata1),
+                .in1(main_in1),
                 .in2(main_in2),
                 .ctrl(alu_ctrl),
                 .result(tmp_out)
@@ -67,6 +74,8 @@ module ALU(rdata1, rdata2, imm, alu_src, alu_ctrl, result, is_zero);
                 last_zero = ~tmp_result[`ALU_BITS];
             `ALUCTRL_BGE, `ALUCTRL_BGEU:
                 last_zero = ~tmp_result[0];
+            `ALUCTRL_JAL, `ALUCTRL_JALR:
+                last_zero = 1;
             default:
                 last_zero = 0;
         endcase
@@ -108,7 +117,7 @@ module ALUmain(in1, in2, ctrl, result);
     always @(*) begin
         case(ctrl)
             // both add and sub are add, in2 already being negative
-            `ALUCTRL_ADD, `ALUCTRL_SUB:
+            `ALUCTRL_ADD, `ALUCTRL_SUB, `ALUCTRL_AUIPC:
                 arith_carry = arith_in1 + arith_in2;
             // slt => ignore last bit, sltu => all, compare to is_zero
             // fu 硬尻, 只留最後一個bit
@@ -130,6 +139,8 @@ module ALUmain(in1, in2, ctrl, result);
                 arith_carry = $signed(arith_in1) >>> arith_in2[4:0];
             `ALUCTRL_SRL:
                 arith_carry = arith_in1 >> arith_in2[4:0];
+            `ALUCTRL_JALR:
+                arith_carry = arith_in1 + 4;
             default:
                 arith_carry = 0;
         endcase

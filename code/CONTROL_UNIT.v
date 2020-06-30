@@ -13,6 +13,7 @@ module CONTROL_UNIT #(
                          ALUCtrl,
                          MemWrite,
                          ALUSrc,
+                         ALUPCSrc,
                          RegWrite
                          );
 
@@ -29,7 +30,7 @@ module CONTROL_UNIT #(
     input [6:0]   Opcode, Funct7;
     input [2:0]   Funct3;
     output reg [4:0] ALUCtrl;
-    output reg       Branch, MemtoReg, MemWrite, ALUSrc, RegWrite;
+    output reg       Branch, MemtoReg, MemWrite, ALUSrc, RegWrite, ALUPCSrc;
 
     always @* begin  // ALUCtrl
         case(Opcode)
@@ -212,6 +213,18 @@ module CONTROL_UNIT #(
             end
         endcase
     end  // ALUSrc
+
+
+    always @* begin  // ALUPCSrc
+        case(Opcode)
+            U_Type_AUIPC, UJ_Type_JAL, UJ_Type_JALR: begin
+                ALUPCSrc   = 1'b1;
+            end
+            default: begin
+                ALUPCSrc   = 1'b0;
+            end
+        endcase
+    end  // ALUPCSrc
 
 
     always @* begin  // RegWrite
