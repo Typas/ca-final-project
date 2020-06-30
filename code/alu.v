@@ -26,7 +26,6 @@ module ALU(clk, rst_n, rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ct
     wire                       sign;
     wire                       multdiv_mode;
     wire                       multdiv_valid;
-    wire                       multdiv_ready;
 
     reg [`ALU_BITS:0]          tmp_result;
     reg                        last_zero;
@@ -75,7 +74,7 @@ module ALU(clk, rst_n, rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ct
                 .clk(clk),
                 .rst_n(rst_n),
                 .valid(multdiv_valid),
-                .ready(multdiv_ready),
+                .ready(ready),
                 .mode(multdiv_mode),
                 .in_A(main_in1),
                 .in_B(main_in2),
