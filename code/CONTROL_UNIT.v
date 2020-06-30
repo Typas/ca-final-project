@@ -1,18 +1,18 @@
 `include "alu_control_def.v"
 
 module CONTROL_UNIT #(
-                      parameter BITS = 32,
+                      parameter BITS = 32
                       ) (
                          Opcode,
                          Funct7,
                          Funct3,
                          rst_n,
                          Branch,
-                         MemRead,
                          MemtoReg,
                          ALUCtrl,
                          MemWrite,
                          ALUSrc,
+                         ALUPCSrc,
                          RegWrite
                          );
 
@@ -29,7 +29,7 @@ module CONTROL_UNIT #(
     input [6:0]   Opcode, Funct7;
     input [2:0]   Funct3;
     output reg [4:0] ALUCtrl;
-    output reg       Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite;
+    output reg       Branch, MemtoReg, MemWrite, ALUSrc, RegWrite, ALUPCSrc;
 
     always @* begin  // ALUCtrl
         case(Opcode)
@@ -39,135 +39,135 @@ module CONTROL_UNIT #(
                         case(Opcode)
                             R_Type: begin
                                 case(Funct7)
-                                    7'b000_0000: ALUCtrl = ALUCTRL_ADD;
-                                    7'b010_0000: ALUCtrl = ALUCTRL_SUB;
-                                    7'b000_0001: ALUCtrl = ALUCTRL_MUL;
-                                    default:     ALUCtrl = ALUCTRL_NOP;
+                                    7'b000_0000: ALUCtrl = `ALUCTRL_ADD;
+                                    7'b010_0000: ALUCtrl = `ALUCTRL_SUB;
+                                    7'b000_0001: ALUCtrl = `ALUCTRL_MUL;
+                                    default:     ALUCtrl = `ALUCTRL_NOP;
                                 endcase
                             end
                             I_Type_Calc: begin
-                                ALUCtrl = ALUCTRL_ADD;
+                                ALUCtrl = `ALUCTRL_ADD;
                             end
-                            default:           ALUCtrl = ALUCTRL_NOP;
+                            default:           ALUCtrl = `ALUCTRL_NOP;
                         endcase  // Opcode
                     end  // case(Funct3) == 3'b000
                     3'b001: begin
                         case(Funct7)
-                            7'b000_0000: ALUCtrl = ALUCTRL_SLL;
-                            7'b000_0001: ALUCtrl = ALUCTRL_MULH;
-                            default    : ALUCtrl = ALUCTRL_NOP;
+                            7'b000_0000: ALUCtrl = `ALUCTRL_SLL;
+                            7'b000_0001: ALUCtrl = `ALUCTRL_MULH;
+                            default    : ALUCtrl = `ALUCTRL_NOP;
                         endcase
                     end  // case(Funct3) == 3'b001
                     3'b010: begin
                         case(Opcode)
                             R_Type: begin
                                 case(Funct7)
-                                    7'b000_0000: ALUCtrl = ALUCTRL_SLT;
-                                    7'b000_0001: ALUCtrl = ALUCTRL_MULHSU;
-                                    default:     ALUCtrl = ALUCTRL_NOP;
+                                    7'b000_0000: ALUCtrl = `ALUCTRL_SLT;
+                                    7'b000_0001: ALUCtrl = `ALUCTRL_MULHSU;
+                                    default:     ALUCtrl = `ALUCTRL_NOP;
                                 endcase
                             end
                             I_Type_Calc: begin
-                                ALUCtrl = ALUCTRL_SLT;
+                                ALUCtrl = `ALUCTRL_SLT;
                             end
-                            default:           ALUCtrl = ALUCTRL_NOP;
+                            default:           ALUCtrl = `ALUCTRL_NOP;
                         endcase  // Opcode
                     end  // case(Funct3) == 3'b010
                     3'b011: begin
                         case(Opcode)
                             R_Type: begin
                                 case(Funct7)
-                                    7'b000_0000: ALUCtrl = ALUCTRL_SLTU;
-                                    7'b000_0001: ALUCtrl = ALUCTRL_MULHU;
-                                    default:     ALUCtrl = ALUCTRL_NOP;
+                                    7'b000_0000: ALUCtrl = `ALUCTRL_SLTU;
+                                    7'b000_0001: ALUCtrl = `ALUCTRL_MULHU;
+                                    default:     ALUCtrl = `ALUCTRL_NOP;
                                 endcase
                             end
                             I_Type_Calc: begin
-                                ALUCtrl = ALUCTRL_SLTU;
+                                ALUCtrl = `ALUCTRL_SLTU;
                             end
-                            default:           ALUCtrl = ALUCTRL_NOP;
+                            default:           ALUCtrl = `ALUCTRL_NOP;
                         endcase  // Opcode
                     end  // case(Funct3) == 3'b011
                     3'b100: begin
                         case(Opcode)
                             R_Type: begin
                                 case(Funct7)
-                                    7'b000_0000: ALUCtrl = ALUCTRL_XOR;
-                                    7'b000_0001: ALUCtrl = ALUCTRL_DIV;
-                                    default:     ALUCtrl = ALUCTRL_NOP;
+                                    7'b000_0000: ALUCtrl = `ALUCTRL_XOR;
+                                    7'b000_0001: ALUCtrl = `ALUCTRL_DIV;
+                                    default:     ALUCtrl = `ALUCTRL_NOP;
                                 endcase
                             end
                             I_Type_Calc: begin
-                                ALUCtrl = ALUCTRL_XOR;
+                                ALUCtrl = `ALUCTRL_XOR;
                             end
-                            default:           ALUCtrl = ALUCTRL_NOP;
+                            default:           ALUCtrl = `ALUCTRL_NOP;
                         endcase  // Opcode
                     end  // case(Funct3) == 3'b100
                     3'b101: begin
                         case(Funct7)
-                            7'b000_0000: ALUCtrl = ALUCTRL_SRL;
-                            7'b010_0000: ALUCtrl = ALUCTRL_SRA;
-                            7'b000_0001: ALUCtrl = ALUCTRL_DIVU;
-                            default:     ALUCtrl = ALUCTRL_NOP;
+                            7'b000_0000: ALUCtrl = `ALUCTRL_SRL;
+                            7'b010_0000: ALUCtrl = `ALUCTRL_SRA;
+                            7'b000_0001: ALUCtrl = `ALUCTRL_DIVU;
+                            default:     ALUCtrl = `ALUCTRL_NOP;
                         endcase
                     end  // case(Funct3) == 3'b101
                     3'b110: begin
                         case(Opcode)
                             R_Type: begin
                                 case(Funct7)
-                                    7'b000_0000: ALUCtrl = ALUCTRL_OR;
-                                    7'b000_0001: ALUCtrl = ALUCTRL_REM;
-                                    default:     ALUCtrl = ALUCTRL_NOP;
+                                    7'b000_0000: ALUCtrl = `ALUCTRL_OR;
+                                    7'b000_0001: ALUCtrl = `ALUCTRL_REM;
+                                    default:     ALUCtrl = `ALUCTRL_NOP;
                                 endcase
                             end
                             I_Type_Calc: begin
-                                ALUCtrl = ALUCTRL_OR;
+                                ALUCtrl = `ALUCTRL_OR;
                             end
-                            default:           ALUCtrl = ALUCTRL_NOP;
+                            default:           ALUCtrl = `ALUCTRL_NOP;
                         endcase  // Opcode
                     end  // case(Funct3) == 3'b110
                     3'b111: begin
                         case(Opcode)
                             R_Type: begin
                                 case(Funct7)
-                                    7'b000_0000: ALUCtrl = ALUCTRL_AND;
-                                    7'b000_0001: ALUCtrl = ALUCTRL_REMU;
-                                    default:     ALUCtrl = ALUCTRL_NOP;
+                                    7'b000_0000: ALUCtrl = `ALUCTRL_AND;
+                                    7'b000_0001: ALUCtrl = `ALUCTRL_REMU;
+                                    default:     ALUCtrl = `ALUCTRL_NOP;
                                 endcase
                             end
                             I_Type_Calc: begin
-                                ALUCtrl = ALUCTRL_AND;
+                                ALUCtrl = `ALUCTRL_AND;
                             end
-                            default:           ALUCtrl = ALUCTRL_NOP;
+                            default:           ALUCtrl = `ALUCTRL_NOP;
                         endcase  // Opcode
                     end  // case(Funct3) == 3'b111
                 endcase  // Funct3
             end  // R_Type, I_Type_Calc
             U_Type_AUIPC: begin
-                ALUCtrl = ALUCTRL_AUIPC;
+                ALUCtrl = `ALUCTRL_AUIPC;
             end
             I_Type_Load, S_Type: begin
-                ALUCtrl = ALUCTRL_ADD;
+                ALUCtrl = `ALUCTRL_ADD;
             end
             SB_Type: begin
                 case(Funct3)
-                    3'b000:  ALUCtrl = ALUCTRL_BEQ;
-                    3'b001:  ALUCtrl = ALUCTRL_BNE;
-                    3'b100:  ALUCtrl = ALUCTRL_BLT;
-                    3'b101:  ALUCtrl = ALUCTRL_BGE;
-                    3'b110:  ALUCtrl = ALUCTRL_BLTU;
-                    3'b111:  ALUCtrl = ALUCTRL_BGEU;
-                    default: ALUCtrl = ALUCTRL_NOP;
+                    3'b000:  ALUCtrl = `ALUCTRL_BEQ;
+                    3'b001:  ALUCtrl = `ALUCTRL_BNE;
+                    3'b100:  ALUCtrl = `ALUCTRL_BLT;
+                    3'b101:  ALUCtrl = `ALUCTRL_BGE;
+                    3'b110:  ALUCtrl = `ALUCTRL_BLTU;
+                    3'b111:  ALUCtrl = `ALUCTRL_BGEU;
+                    default: ALUCtrl = `ALUCTRL_NOP;
                 endcase
             end
             UJ_Type_JAL: begin
-                ALUCtrl = ALUCTRL_JAL;
+                ALUCtrl = `ALUCTRL_JAL;
             end
             UJ_Type_JALR: begin
-                ALUCtrl = ALUCTRL_JALR;
+                ALUCtrl = `ALUCTRL_JALR;
             end
             default: begin
-                ALUCtrl = ALUCTRL_NOP;
+                ALUCtrl = `ALUCTRL_NOP;
             end
         endcase  // Opcode
     end  // ALUCtrl
@@ -184,20 +184,12 @@ module CONTROL_UNIT #(
         endcase
     end  // Branch
 
-
-    always @* begin  // MemRead, MemtoReg
-        case(Opcode)
-            I_Type_Load: begin
-                MemRead  = 1'b1;
-                MemtoReg = 1'b1;
-            end
-            default: begin
-                MemRead  = 1'b0;
-                MemtoReg = 1'b0;
-            end
+    always @* begin // MemtoReg
+        case (Opcode)
+            I_Type_Load: MemtoReg = 1'b1;
+            default: MemtoReg = 1'b0;
         endcase
-    end  // Branch
-
+    end //Branch 
 
     always @* begin  // MemWrite
         case(Opcode)
@@ -220,6 +212,18 @@ module CONTROL_UNIT #(
             end
         endcase
     end  // ALUSrc
+
+
+    always @* begin  // ALUPCSrc
+        case(Opcode)
+            U_Type_AUIPC, UJ_Type_JAL, UJ_Type_JALR: begin
+                ALUPCSrc   = 1'b1;
+            end
+            default: begin
+                ALUPCSrc   = 1'b0;
+            end
+        endcase
+    end  // ALUPCSrc
 
 
     always @* begin  // RegWrite
