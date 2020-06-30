@@ -15,7 +15,8 @@ module CONTROL_UNIT #(
                          ALUSrc,
                          ALUPCSrc,
                          RegWrite,
-                         PCJalr
+                         PCJalr,
+                         Stall
                          );
 
     parameter   R_Type         = 7'b011_0011;  // RV32I such as add; RV32M such as MUL
@@ -233,8 +234,8 @@ module CONTROL_UNIT #(
             R_Type: begin
                 case(Funct7)
                     7'b000_0001: Stall = ~MulDivAluReady;
+                    default: Stall = 1'b0;
                 endcase
-                default: Stall = 1'b0;
             end
             default: begin
                 Stall   = 1'b0;

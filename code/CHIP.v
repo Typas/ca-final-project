@@ -49,6 +49,7 @@ module CHIP(clk,
     wire                      Jalr;
     wire [`ALU_BITS-1:0]      ALUout;
     wire                      zero;
+    wire                      Stall;
 
 
     //---------------------------------------//
@@ -95,7 +96,8 @@ module CHIP(clk,
                        .ALUSrc(ALUSrc),
                        .ALUPCSrc(ALUPCSrc),
                        .RegWrite(regWrite),
-                       .PCJalr(Jalr));
+                       .PCJalr(Jalr),
+                       .Stall(stall));
 
     ALU alu0(
              .rdata1(rs1_data),
@@ -122,8 +124,8 @@ module CHIP(clk,
 
             end
             else begin
-                PC <= PC_nxt;
-
+                if (!Stall) PC <= PC_nxt;
+                else PC <= PC;
             end
         end
 endmodule
