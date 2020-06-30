@@ -1,14 +1,14 @@
 // PC control unit
-module PC (Pc, Pc_nxt, Imm_In, Branch);
+module PC (Pc, Pc_nxt, Imm_In, Rs_data1, Branch, Jal);
 
-    input           Branch;
-    input [31:0]    Pc, Imm_In;
+    input           Branch, Jal;
+    input [31:0]    Pc, Imm_In, Rs_data1;
     output [31:0]   Pc_nxt;
 
     wire [31:0]     imm;
 
     assign imm = Imm_In << 1;
-    assign Pc_nxt = Branch?(Pc+imm):(Pc+4);
+    assign Pc_nxt = Branch?((Jal?Rs_data1:Pc)+imm):(Pc+4);
 
 endmodule
 
