@@ -140,7 +140,7 @@ module ALUmain(in1, in2, ctrl, result);
                 arith_carry = $signed(arith_in1) >>> arith_in2[4:0];
             `ALUCTRL_SRL:
                 arith_carry = arith_in1 >> arith_in2[4:0];
-            `ALUCTRL_JALR:
+            `ALUCTRL_JAL, `ALUCTRL_JALR:
                 arith_carry = arith_in1 + 4;
             default:
                 arith_carry = 0;
