@@ -1,7 +1,7 @@
 // PC control unit
 module PC (Pc, Pc_nxt, Imm_In, Rs_data1, Branch, Jalr);
 
-    input           Branch, Jal;
+    input           Branch, Jalr;
     input [31:0]    Pc, Imm_In, Rs_data1;
     output [31:0]   Pc_nxt;
 
