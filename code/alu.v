@@ -211,9 +211,9 @@ module selectALU(ctrl, md_out, am_out, out, MSB1, MSB2);
     wire                     md_neg_out_high;
     wire                     md_neg_out_low;
 
-    assign sign = (ctrl == ALUCTRL_MULHSU
-                   || ctrl == ALUCTRL_DIV
-                   || ctrl == ALUCTRL_REM
+    assign sign = (ctrl == `ALUCTRLMULHSU
+                   || ctrl == `ALUCTRLDIV
+                   || ctrl == `ALUCTRLREM
                    ) ? MSB1 : (MSB1 ^ MSB2);
     ALUneg an0(
                .in(md_out[`ALU_CTRL_BITS-1:0]),
@@ -229,13 +229,13 @@ module selectALU(ctrl, md_out, am_out, out, MSB1, MSB2);
 
     always @(*) begin
         case(ctrl)
-            ALUCTRL_MUL, ALUCTRL_DIVU:
+            `ALUCTRL_MUL, `ALUCTRLDIVU:
                 out = {1'b0, md_out[`ALU_BITS-1:0]};
-            ALUCTRL_MULHU, ALUCTRL_REMU:
+            `ALUCTRLMULHU, `ALUCTRLREMU:
                     out = {1'b0, md_out[2*`ALU_BITS-1:`ALU_BITS]};
-            ALUCTRL_MULHSU, ALUCTRL_MULH, ALUCTRL_REM:
+            `ALUCTRLMULHSU, `ALUCTRLMULH, `ALUCTRLREM:
                 out = {1'b0, md_neg_out_high};
-            ALUCTRL_DIV:
+            `ALUCTRLDIV:
                 out = {1'b0, md_neg_out_low};
             default:
                 out = am_out;
