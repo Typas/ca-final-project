@@ -13,6 +13,7 @@ module CONTROL_UNIT #(
                          ALUCtrl,
                          MemWrite,
                          ALUSrc,
+                         ALUPCSrc,
                          RegWrite
                          );
 
