@@ -21,15 +21,15 @@ module CHIP(clk,
     output        mem_wen_D  ;
     output [31:0] mem_addr_D ;
     output [31:0] mem_wdata_D;
-    input [31:0]  mem_rdata_D;
+    input  [31:0] mem_rdata_D;
     // For mem_I
     output [31:0] mem_addr_I ;
-    input [31:0]  mem_rdata_I;
+    input  [31:0] mem_rdata_I;
 
     //---------------------------------------//
     // Do not modify this part!!!            //
     // Exception: You may change wire to reg //
-    reg [31:0]    PC          ;              //
+    reg  [31:0]   PC          ;              //
     wire [31:0]   PC_nxt      ;              //
     wire          regWrite    ;              //
     wire [ 4:0]   rs1, rs2, rd;              //
@@ -39,33 +39,93 @@ module CHIP(clk,
     //---------------------------------------//
 
     // Todo: other wire/reg
+    wire [31:0]               imm;
+    wire                      branch;
+    wire                      is_branch;
+    wire                      MemtoReg;
+    wire [`ALU_CTRL_BITS-1:0] ALUCtrl;
+    wire                      ALUPCSrc;
+    wire                      ALUSrc;
+    wire                      Jalr;
+    wire [`ALU_BITS-1:0]      ALUout;
+    wire                      zero;
+
 
     //---------------------------------------//
     // Do not modify this part!!!            //
-    reg_file reg0(                           //
-                                             .clk(clk),                           //
-                                             .rst_n(rst_n),                       //
-                                             .wen(regWrite),                      //
-                                             .a1(rs1),                            //
-                                             .a2(rs2),                            //
-                                             .aw(rd),                             //
-                                             .d(rd_data),                         //
-                                             .q1(rs1_data),                       //
-                                             .q2(rs2_data));                      //
+    //---------------------------------------//                                 
+    reg_file reg0(
+                  .clk(clk),                           //
+                  .rst_n(rst_n),                       //
+                  .wen(regWrite),                      //
+                  .a1(rs1),                            //
+                  .a2(rs2),                            //
+                  .aw(rd),                             //
+                  .d(rd_data),                         //
+                  .q1(rs1_data),                       //
+                  .q2(rs2_data));                      //
     //---------------------------------------//
-
     // Todo: any combinational/sequential circuit
+    //---------------------------------------//
+    PC_AND pc_and0(
+                   .Branch(branch),
+                   .Zero(zero),
+                   .Is_Branch(is_branch));
+    PC pc0(
+           .Pc(PC),
+           .Pc_nxt(PC_nxt),
+           .Imm_In(imm),
+           .Rs_data1(rs1_data),
+           .Branch(is_branch),
+           .Jalr(Jalr));
 
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            PC <= 32'h00010000; // Do not modify this value!!!
+    immGen imm0(
+                .instruction(mem_rdata_I),
+                .immediate(imm));
 
+    CONTROL_UNIT ctrl0(
+                       .Opcode(mem_rdata_I[6:0]),
+                       .Funct7(mem_rdata_I[31:25]),
+                       .Funct3(mem_rdata_I[14:12]),
+                       .rst_n(rst_n),
+                       .Branch(branch),
+                       .MemtoReg(MemtoReg),
+                       .ALUCtrl(ALUCtrl),
+                       .MemWrite(mem_wen_D),
+                       .ALUSrc(ALUSrc),
+                       .ALUPCSrc(ALUPCSrc),
+                       .RegWrite(regWrite),
+                       .PCJalr(Jalr));
+
+    ALU alu0(
+             .rdata1(rs1_data),
+             .pc_in(PC),
+             .rdata2(rs2_data),
+             .imm(imm),
+             .alu_pcsrc(ALUPCSrc),
+             .alu_immsrc(ALUSrc),
+             .alu_ctrl(ALUCtrl),
+             .result(ALUout),
+             .is_zero(zero));
+   
+   assign rd = mem_rdata_I[11:7];
+   assign rs1 = mem_rdata_I[19:15];
+   assign rs2 = mem_rdata_I[24:20];
+   assign rd_data = MemtoReg ? mem_rdata_D : ALUout;
+   assign mem_addr_D = ALUout;
+   assign mem_wdata_D = rs2_data;
+   assign mem_addr_I = PC;
+
+        always @(posedge clk or negedge rst_n) begin
+            if (!rst_n) begin
+                PC <= 32'h00010000; // Do not modify this value!!!
+
+            end
+            else begin
+                PC <= PC_nxt;
+
+            end
         end
-        else begin
-            PC <= PC_nxt;
-
-        end
-    end
 endmodule
 
 module reg_file(clk, rst_n, wen, a1, a2, aw, d, q1, q2);
@@ -111,3 +171,4 @@ module reg_file(clk, rst_n, wen, a1, a2, aw, d, q1, q2);
         end
     end
 endmodule
+
