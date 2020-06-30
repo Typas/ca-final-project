@@ -34,14 +34,14 @@ module ALU(rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ctrl, result, 
     // 0 => reg
     // 1 => imm
     ALUmux amu0(
-                .r2(rdata2),
-                .imm(imm),
+                .rdata(rdata2),
+                .other(imm),
                 .src(alu_immsrc),
                 .out(tmp_in2)
                 );
     ALUmux amu1(
-                .r2(rdata1),
-                .imm(pc_in),
+                .rdata(rdata1),
+                .other(pc_in),
                 .src(alu_pcsrc),
                 .out(main_in1)
                 );
@@ -156,11 +156,11 @@ module ALUneg(in, sign, out);
     assign out = sign ? (~in+1) : in;
 endmodule // ALUneg
 
-module ALUmux(r2, imm, src, out);
-    input [`ALU_BITS-1:0] r2;
-    input [`ALU_BITS-1:0] imm;
+module ALUmux(rdata, other, src, out);
+    input [`ALU_BITS-1:0] rdata;
+    input [`ALU_BITS-1:0] other;
     input                 src;
     output [`ALU_BITS-1:0] out;
 
-    assign out = src ? imm : r2;
+    assign out = src ? other : rdata;
 endmodule // ALUmux
