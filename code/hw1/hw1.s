@@ -6,6 +6,13 @@
 
 FUNCTION:
     # Todo: define your own function in HW1
+    addi sp, sp, -4
+    sw   ra, 0(sp)
+    jal  x1, T
+    lw   ra, 0(sp)
+    addi sp, sp, 4
+    ret
+
 
 T:
     li   t0, 2
@@ -35,7 +42,6 @@ __start:                     #
     la   t0, n               #
     lw   x10, 0(t0)          #
     jal  x1,FUNCTION         #
-    addi t0, a0, 0
     la   t0, n               #
     sw   x10, 4(t0)          #
     addi a0,x0,10            #
