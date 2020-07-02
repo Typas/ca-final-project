@@ -6,6 +6,7 @@ Session.vim
 *~
 .*~
 \#*\#
+*.o
 
 # Old HW3 Reference Code
 hw3\ ref/**
