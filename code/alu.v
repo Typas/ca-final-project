@@ -300,9 +300,8 @@ module multDiv(clk, rst_n, valid, ready, mode, in_A, in_B, out);
                     if (mode) state_nxt = DIV;
                     else      state_nxt = MULT;
                 end
-                else begin
+                else
                     state_nxt = state;
-                end
             end
             MULT: begin
                 case(counter)
@@ -347,12 +346,10 @@ module multDiv(clk, rst_n, valid, ready, mode, in_A, in_B, out);
             end
             DIV : begin
                 alu_out = shreg[63:32] - alu_in;
-                if (alu_out[32]) begin
-                    alu_out = {1'b0, shreg[63:32]};
-                end
-                else begin
+                if (alu_out[32])
+                    alu_out = shreg[63:32];
+                else
                     alu_out[32] = 1;
-                end
             end
             OUT : alu_out = 0;
         endcase
