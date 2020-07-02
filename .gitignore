@@ -13,6 +13,9 @@ hw3\ ref/**
 
 # simluation program files, such as "ncverilog" or "dv"
 **/INCA_libs/**
+**/nWaveLog/**
+**/BSSLib.lib++/**
+novas.conf
 command.log
 default.svf
 filenames.log
