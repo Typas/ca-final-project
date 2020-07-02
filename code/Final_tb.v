@@ -29,6 +29,12 @@
     `define MEM_DATA_ANS "./hw1/hw1_data_ans.txt"
 `endif
 
+`ifdef rv32m
+    `define MEM_TEXT "./rv32m/mul_div_rem_text.txt"
+    `define MEM_DATA "./rv32m/mul_div_rem_data.txt"
+    `define MEM_DATA_ANS "./rv32m/mul_div_rem_ans.txt"
+`endif
+
 module Final_tb;
 
     reg         clk, rst_n ;
