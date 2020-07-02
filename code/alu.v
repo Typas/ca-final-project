@@ -229,7 +229,7 @@ module selectALU(ctrl, md_out, am_out, out, MSB1, MSB2);
     always @(*) begin
        case(ctrl)
           `ALUCTRL_DIV: sign = MSB1^MSB2;
-          `ALUCTRL_REM, `ALUCTRL_REMU: sign = MSB2;
+          `ALUCTRL_REM: sign = MSB1;
           default:      sign = 0;
        endcase
     end
