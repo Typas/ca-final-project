@@ -202,7 +202,7 @@ module ALUneg(in, sig, out);
 
     wire                   sign;
 
-    assign sign = sig & input[`ALU_BITS-1];
+    assign sign = sig & in[`ALU_BITS-1];
     assign out = sign ? (~in+1) : in;
 endmodule // ALUneg
 
