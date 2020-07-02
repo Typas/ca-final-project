@@ -318,10 +318,7 @@ module multDiv(clk, rst_n, valid, ready, mode, in_A, in_B, out);
     // ALU input
     always @(*) begin
         case(state)
-            IDLE: begin
-                if (valid) alu_in_nxt = in_B;
-                else       alu_in_nxt = 0;
-            end
+            IDLE: alu_in_nxt = valid ? in_B : 0;
             OUT : alu_in_nxt = 0;
             default: alu_in_nxt = alu_in;
         endcase
@@ -338,7 +335,6 @@ module multDiv(clk, rst_n, valid, ready, mode, in_A, in_B, out);
                 alu_out = shreg[63:32] - alu_in;
                 if (alu_out[32]) begin
                     alu_out = shreg[63:32];
-                    alu_out[32] = 0;
                 end
                 else begin
                     alu_out[32] = 1;
@@ -351,10 +347,8 @@ module multDiv(clk, rst_n, valid, ready, mode, in_A, in_B, out);
     // Todo 4: Shift register
     always @(*) begin
         case(state)
-            IDLE: begin
-                if (valid) shreg_nxt = in_A << mode; // need to shift 1 when div
-                else       shreg_nxt = 0;
-            end
+            IDLE:
+                shreg_nxt = valid ? (in_A << mode) : 0;
             MULT: begin
                 shreg_nxt[30:0]  = shreg[32:1];
                 shreg_nxt[63:31] = alu_out; // shift without >> umm
