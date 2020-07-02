@@ -72,7 +72,7 @@ module ALU(clk, rst_n, rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ct
                .in(tmp_in1),
                .sign(sig1),
                .out(main_in1)
-               )
+               );
     ALUmain am0(
                 .in1(main_in1),
                 .in2(main_in2),
@@ -200,7 +200,10 @@ module ALUneg(in, sig, out);
     input                  sig;
     output [`ALU_BITS-1:0] out;
 
-    assign out = (sig & input[`ALU_BITS-1]) ? (~in+1) : in;
+    wire                   sign;
+
+    assign sign = sig & input[`ALU_BITS-1];
+    assign out = sign ? (~in+1) : in;
 endmodule // ALUneg
 
 module ALUmux(rdata, other, src, out);
