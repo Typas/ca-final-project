@@ -230,12 +230,12 @@ module selectALU(ctrl, md_out, am_out, out, MSB1, MSB2);
                    || ctrl == `ALUCTRL_REM
                    ) ? MSB1 : (MSB1 ^ MSB2);
     ALUneg an0(
-               .in(md_out[`ALU_CTRL_BITS-1:0]),
+               .in(md_out[`ALU_BITS-1:0]),
                .sign(sign),
                .out(md_neg_out_low)
                );
     ALUneg an1(
-               .in(md_out[2*`ALU_CTRL_BITS-1:`ALU_BITS]),
+               .in(md_out[2*`ALU_BITS-1:`ALU_BITS]),
                .sign(sign),
                .out(md_neg_out_high)
                );
