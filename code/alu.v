@@ -65,12 +65,12 @@ module ALU(clk, rst_n, rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ct
                 );
     ALUneg an0(
                .in(tmp_in2),
-               .sign(sig2),
+               .sig(sig2),
                .out(main_in2)
                );
     ALUneg an1(
                .in(tmp_in1),
-               .sign(sig1),
+               .sig(sig1),
                .out(main_in1)
                );
     ALUmain am0(
@@ -232,12 +232,12 @@ module selectALU(ctrl, md_out, am_out, out, MSB1, MSB2);
                    ) ? MSB1 : (MSB1 ^ MSB2);
     ALUneg an0(
                .in(md_out[`ALU_CTRL_BITS-1:0]),
-               .sign(sign),
+               .sig(sign),
                .out(md_neg_out_low)
                );
     ALUneg an1(
                .in(md_out[`ALU_CTRL_BITS-1:0]),
-               .sign(sign),
+               .sig(sign),
                .out(md_neg_out_high)
                );
 
