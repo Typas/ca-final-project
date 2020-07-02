@@ -25,7 +25,8 @@ L1:
 
 __start:
     la t0, n
-    lw x10, 0(t0)
+#   lw x10, 0(t0)
+    li x10, 8
     jal x1, fact
     la t0, n
     sw x10, 4(t0)
