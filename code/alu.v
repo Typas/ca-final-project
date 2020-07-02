@@ -24,29 +24,31 @@ module ALU(clk, rst_n, rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ct
     wire [`ALU_BITS:0]         tmp_out;
     wire [2*`ALU_BITS-1:0]     multdiv_out;
     wire [`ALU_BITS:0]         alumain_out;
-    wire                       sig1;
-    wire                       sig2;
+    wire                       sign1;
+    wire                       sign2;
     wire                       multdiv_mode;
     wire                       multdiv_valid;
+    wire                       signed_div;
 
     reg [`ALU_BITS:0]          tmp_result;
     reg                        last_zero;
 
     assign result = tmp_result[`ALU_BITS-1:0];
     assign is_zero = last_zero;
-    assign sig2 = ((
-                   alu_ctrl >= `ALUCTRL_SUB
-                   && alu_ctrl <= `ALUCTRL_SLTU
-                   ) || (
-                         alu_ctrl >= `ALUCTRL_BEQ
-                         && alu_ctrl <= `ALUCTRL_BGEU
-                         ) || alu_ctrl == `ALUCTRL_DIV
-                  || alu_ctrl == `ALUCTRL_REM
-                  );
-    assign sig1 = (
-                    alu_ctrl == `ALUCTRL_DIV
-                    || alu_ctrl == `ALUCTRL_REM
-                    );
+    assign signed_div = alu_ctrl == `ALUCTRL_DIV
+                        || alu_ctrl == `ALUCTRL_REM;
+   
+    assign sign2 = ((
+                    alu_ctrl >= `ALUCTRL_SUB
+                    && alu_ctrl <= `ALUCTRL_SLTU
+                    ) || (
+                          alu_ctrl >= `ALUCTRL_BEQ
+                          && alu_ctrl <= `ALUCTRL_BGEU
+                          ) || (
+                                signed_div
+                                & tmp_in2[`ALU_BITS-1]
+                                ));
+    assign sign1 = signed_div & tmp_in1[`ALU_BITS-1];
 
     // alu_immsrc
     // 0 => reg
@@ -65,12 +67,12 @@ module ALU(clk, rst_n, rdata1, pc_in, rdata2, imm, alu_pcsrc ,alu_immsrc, alu_ct
                 );
     ALUneg an0(
                .in(tmp_in2),
-               .sig(sig2),
+               .sign(sign2),
                .out(main_in2)
                );
     ALUneg an1(
                .in(tmp_in1),
-               .sig(sig1),
+               .sign(sign1),
                .out(main_in1)
                );
     ALUmain am0(
@@ -195,14 +197,11 @@ module ALUmain(in1, in2, ctrl, result);
 
 endmodule // ALUmain
 
-module ALUneg(in, sig, out);
+module ALUneg(in, sign, out);
     input [`ALU_BITS-1:0]  in;
-    input                  sig;
+    input                  sign;
     output [`ALU_BITS-1:0] out;
 
-    wire                   sign;
-
-    assign sign = sig & in[`ALU_BITS-1];
     assign out = sign ? (~in+1) : in;
 endmodule // ALUneg
 
@@ -232,12 +231,12 @@ module selectALU(ctrl, md_out, am_out, out, MSB1, MSB2);
                    ) ? MSB1 : (MSB1 ^ MSB2);
     ALUneg an0(
                .in(md_out[`ALU_CTRL_BITS-1:0]),
-               .sig(sign),
+               .sign(sign),
                .out(md_neg_out_low)
                );
     ALUneg an1(
                .in(md_out[`ALU_CTRL_BITS-1:0]),
-               .sig(sign),
+               .sign(sign),
                .out(md_neg_out_high)
                );
 
