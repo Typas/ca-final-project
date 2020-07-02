@@ -7,12 +7,13 @@ Jupiter_Text_File="mul_div_rem_text.txt"
 
 Py_Script="mul_div_rem.py"
 
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 2 ]; then
    echo "usage:"
    echo "./help_test.sh <number 1> <number 2>"
    echo ""
    echo "This would modify the py file and generate the Jupiter obj dump"
    echo "Assuming Jupiter Location"
+   exit
 fi
 
 sed -i -r "s|(n = )-?[0-9]+|\1$1|" "${Py_Script}"
