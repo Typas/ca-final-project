@@ -235,7 +235,7 @@ module selectALU(ctrl, md_out, am_out, out, MSB1, MSB2);
                .out(md_neg_out_low)
                );
     ALUneg an1(
-               .in(md_out[`ALU_CTRL_BITS-1:0]),
+               .in(md_out[2*`ALU_CTRL_BITS-1:`ALU_BITS]),
                .sign(sign),
                .out(md_neg_out_high)
                );
@@ -348,7 +348,7 @@ module multDiv(clk, rst_n, valid, ready, mode, in_A, in_B, out);
             DIV : begin
                 alu_out = shreg[63:32] - alu_in;
                 if (alu_out[32]) begin
-                    alu_out = shreg[63:32];
+                    alu_out = {1'b0, shreg[63:32]};
                 end
                 else begin
                     alu_out[32] = 1;
