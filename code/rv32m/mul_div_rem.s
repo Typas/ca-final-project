@@ -6,8 +6,8 @@
 
 FUNCTION:
 
-    li    t1,   83
-    li    t2,   -9
+    li    t1,   30
+    li    t2,   -7
     la    t0,   addr
 
     mul  x10,   t1,    t2

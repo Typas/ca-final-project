@@ -20,8 +20,8 @@ def to_hex(num):
 
 if __name__ == '__main__':
     # Modify your test pattern here
-    n = 83
-    m = -9
+    n = 30
+    m = -7
 
     with open('mul_div_rem_data.txt', 'w') as f_data:
         f_data.write('{:0>8x}\n'.format(10))
